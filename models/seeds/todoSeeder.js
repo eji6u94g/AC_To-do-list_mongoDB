@@ -1,10 +1,7 @@
-const express = require('express')
 const mongoose = require('mongoose')
-const app = express()
-const port = 3000
 const dbConnectionStatus = mongoose.connection
+const Todo = require('../todo.js')
 
-//setup mongoose
 mongoose.connect('mongodb://localhost:27017/to-do-list', { useNewUrlParser: true, useUnifiedTopology: true })
 
 dbConnectionStatus.on('error', () => {
@@ -13,12 +10,10 @@ dbConnectionStatus.on('error', () => {
 
 dbConnectionStatus.once('open', () => {
   console.log('Mongodb is connected')
-})
 
-app.get('/', (req, res) => {
-  res.send('hello')
-})
+  for (let i = 0; i < 10; i++) {
+    Todo.create({ name: `name-${i}` })
+  }
 
-app.listen(port, () => {
-  console.log('online')
+  console.log('Seed data are loaded')
 })
