@@ -1,6 +1,8 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
+const bodyParser = require('body-parser')
+const todoData = require('./models/todo.js')
 const app = express()
 const port = 3000
 const dbConnectionStatus = mongoose.connection
@@ -20,8 +22,26 @@ dbConnectionStatus.once('open', () => {
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 
+//set body-parser
+app.use(bodyParser.urlencoded({ extended: true }))
+
 app.get('/', (req, res) => {
-  res.render('index')
+  //get all of data from Todo models
+  todoData.find()
+    .lean() //把 Mongoose 的 Model 物件轉換成乾淨單純的 JavaScript 資料陣列
+    .then(todos => res.render('index', { todos }))
+    .catch(error => console.error(error))
+})
+
+app.get('/todos/new', (req, res) => {
+  return res.render('new')
+})
+
+app.post('/todos', (req, res) => {
+  const name = req.body.name
+  todoData.create({ name })
+    .then(() => res.redirect('/'))
+    .catch(error => console.log(error))
 })
 
 app.listen(port, () => {
