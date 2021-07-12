@@ -33,6 +33,7 @@ app.get('/', (req, res) => {
     .catch(error => console.error(error))
 })
 
+// create item
 app.get('/todos/new', (req, res) => {
   res.render('new')
 })
@@ -44,6 +45,7 @@ app.post('/todos', (req, res) => {
     .catch(error => console.log(error))
 })
 
+//see detail of item
 app.get('/todos/:id', (req, res) => {
   const id = req.params.id
   todoData.findById(id)
@@ -51,6 +53,29 @@ app.get('/todos/:id', (req, res) => {
     .then(todo => res.render('detail', { todo }))
     .catch(error => console.log(error))
 })
+
+//edit item
+app.get('/todos/:id/edit', (req, res) => {
+  const id = req.params.id
+  todoData.findById(id)
+    .lean()
+    .then(todo => res.render('edit', { todo }))
+    .catch(error => console.log(error))
+})
+
+app.post('/todos/:id', (req, res) => {
+  const name = req.body.name
+  const id = req.params.id
+  todoData.findById(id)
+    .then(todo => {
+      todo.name = name
+      return todo.save()
+    })
+    .then(todo => res.redirect(`/todos/${id}`))
+    .catch(error => console.log(error))
+})
+
+
 
 app.listen(port, () => {
   console.log('online')
