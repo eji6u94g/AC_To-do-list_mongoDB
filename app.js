@@ -75,7 +75,14 @@ app.post('/todos/:id', (req, res) => {
     .catch(error => console.log(error))
 })
 
-
+//delete item
+app.post('/todos/:id/delete', (req, res) => {
+  const id = req.params.id
+  todoData.findById(id)
+    .then(todo => todo.remove())
+    .then(todo => res.redirect('/'))
+    .catch(error => console.log(error))
+})
 
 app.listen(port, () => {
   console.log('online')
