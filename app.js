@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
+const methodOverRide = require('method-override')
 const todoData = require('./models/todo.js')
 const app = express()
 const port = 3000
@@ -23,8 +24,10 @@ app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 
 //set body-parser
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }))
 
+//set methodoverride
+app.use(methodOverRide('_method'))
 
 //index page
 app.get('/', (req, res) => {
@@ -66,7 +69,7 @@ app.get('/todos/:id/edit', (req, res) => {
     .catch(error => console.log(error))
 })
 
-app.post('/todos/:id', (req, res) => {
+app.put('/todos/:id', (req, res) => {
   const { name, isDone } = req.body
   const id = req.params.id
   todoData.findById(id)
@@ -82,7 +85,7 @@ app.post('/todos/:id', (req, res) => {
 })
 
 //delete item
-app.post('/todos/:id/delete', (req, res) => {
+app.delete('/todos/:id', (req, res) => {
   const id = req.params.id
   todoData.findById(id)
     .then(todo => todo.remove())
