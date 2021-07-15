@@ -4,6 +4,7 @@ const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const methodOverRide = require('method-override')
 const todoData = require('./models/todo.js')
+const routes = require('./routes/index.js')
 const app = express()
 const port = 3000
 const dbConnectionStatus = mongoose.connection
@@ -29,69 +30,8 @@ app.use(express.urlencoded({ extended: true }))
 //set methodoverride
 app.use(methodOverRide('_method'))
 
-//index page
-app.get('/', (req, res) => {
-  //get all of data from Todo models
-  todoData.find()
-    .lean() //把 Mongoose 的 Model 物件轉換成乾淨單純的 JavaScript 資料陣列
-    .sort({ _id: 'asc' }) //依_id來排序資料, _id有生成前後順序差別, 所以也可以看成是根據創建時間排序
-    .then(todos => res.render('index', { todos }))
-    .catch(error => console.error(error))
-})
-
-// create item
-app.get('/todos/new', (req, res) => {
-  res.render('new')
-})
-
-app.post('/todos', (req, res) => {
-  const name = req.body.name
-  todoData.create({ name })
-    .then(() => res.redirect('/'))
-    .catch(error => console.log(error))
-})
-
-//see detail of item
-app.get('/todos/:id', (req, res) => {
-  const id = req.params.id
-  todoData.findById(id)
-    .lean()
-    .then(todo => res.render('detail', { todo }))
-    .catch(error => console.log(error))
-})
-
-//edit item
-app.get('/todos/:id/edit', (req, res) => {
-  const id = req.params.id
-  todoData.findById(id)
-    .lean()
-    .then(todo => res.render('edit', { todo }))
-    .catch(error => console.log(error))
-})
-
-app.put('/todos/:id', (req, res) => {
-  const { name, isDone } = req.body
-  const id = req.params.id
-  todoData.findById(id)
-    .then(todo => {
-      todo.name = name
-      todo.isDone = isDone === 'on'
-      console.log(todo.isDone)
-      console.log(isDone)
-      return todo.save()
-    })
-    .then(todo => res.redirect(`/todos/${id}`))
-    .catch(error => console.log(error))
-})
-
-//delete item
-app.delete('/todos/:id', (req, res) => {
-  const id = req.params.id
-  todoData.findById(id)
-    .then(todo => todo.remove())
-    .then(todo => res.redirect('/'))
-    .catch(error => console.log(error))
-})
+//routes
+app.use(routes)
 
 app.listen(port, () => {
   console.log('online')
