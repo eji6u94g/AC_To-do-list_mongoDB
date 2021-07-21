@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 const dbConnectionStatus = mongoose.connection
+const MONGODB_URI = process.env.MONGODB || 'mongodb://localhost:27017/to-do-list'
 
 //setup mongoose
-mongoose.connect('mongodb://localhost:27017/to-do-list', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 //connection status response setting
 dbConnectionStatus.on('error', () => {

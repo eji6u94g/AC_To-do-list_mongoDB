@@ -7,7 +7,7 @@ const methodOverRide = require('method-override')
 //self-definition setting
 const routes = require('./routes/index.js')
 require('./config/mongoose')
-const port = 3000
+const port = process.env.PORT || 3000
 
 //items created from imported modules
 const app = express()
@@ -27,4 +27,5 @@ app.use(routes)
 
 app.listen(port, () => {
   console.log('online')
+  console.log(`App is running on http://localhost:${port}`)
 })
